@@ -13,6 +13,7 @@ describe("WyvernRegistry", function () {
   let wregistry: Contract;
   let wexchange: Contract;
   let owner: any;
+  let addr1: any;
   this.beforeEach(async() => {
     const contracts = await deployContracts();
     watomicizer = contracts.atomicizer;
@@ -20,7 +21,7 @@ describe("WyvernRegistry", function () {
     wstaticMarket = contracts.staticMarket;
     wregistry = contracts.registry;
     wexchange = contracts.exchange;
-    [owner] = await ethers.getSigners();
+    [owner, addr1] = await ethers.getSigners();
   });
 
   it('does not allow additional grant', async () => {
@@ -53,6 +54,13 @@ describe("WyvernRegistry", function () {
   it('allows proxy to receive ether',async () => {
     const proxy = await wregistry.proxies(owner.address);
     await expect( owner.sendTransaction({to: proxy, value: parseEther("1")})).to.be.ok;
+  });
+
+  it('allows proxy ownership transfer',async () => {
+    const proxy = await wregistry.proxies(addr1.address);
+    const contract = await ethers.getContractAt("OwnableDelegateProxy", proxy);
+    await expect(contract.connect(addr1).transferProxyOwnership(owner.address)).to.be.ok;
+    await expect(contract.transferProxyOwnership(addr1.address)).to.be.ok;
   })
 
 });
