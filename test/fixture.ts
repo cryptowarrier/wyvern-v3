@@ -5,7 +5,7 @@ const hardhatChainId = 31337;
 const personalSignPrefix = "\x19Ethereum Signed Message:\n";
 
 export async function deployContracts () {
-  const WyvernAtomicizer = await ethers.getContractFactory("WyvernAtomcizer");
+  const WyvernAtomicizer = await ethers.getContractFactory("WyvernAtomicizer");
   const wyvernAtomicizer = await WyvernAtomicizer.deploy();
   await wyvernAtomicizer.deployed();
 
