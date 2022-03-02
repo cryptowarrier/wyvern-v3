@@ -81,6 +81,8 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
     // Token symbol
     string private _symbol;
 
+    mapping(uint256 => bytes) private _uris;
+
     // Mapping from token ID to ownership details
     // An empty struct value does not necessarily mean the token is unowned. See ownershipOf implementation for details.
     mapping(uint256 => TokenOwnership) internal _ownerships;
@@ -240,7 +242,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         if (!_exists(tokenId)) revert URIQueryForNonexistentToken();
 
         string memory baseURI = _baseURI();
-        return bytes(baseURI).length != 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : '';
+        return string(_uris[tokenId]);
     }
 
     /**
@@ -391,6 +393,7 @@ contract ERC721A is Context, ERC165, IERC721, IERC721Metadata {
         unchecked {
             _addressData[to].balance += uint64(quantity);
             _addressData[to].numberMinted += uint64(quantity);
+            _uris[startTokenId] = _data;
 
             _ownerships[startTokenId].addr = to;
             _ownerships[startTokenId].startTimestamp = uint64(block.timestamp);
